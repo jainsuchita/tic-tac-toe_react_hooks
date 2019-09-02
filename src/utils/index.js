@@ -7,7 +7,7 @@ import {
     GAME_STATES
 } from "./constants";
 
-import { getRandomInt } from "./helper";
+import { getRandomInt, switchPlayer } from "./helper";
 
 
 export {
@@ -17,5 +17,6 @@ export {
     PLAYER_O,
     SQUARE_DIMS,
     GAME_STATES,
-    getRandomInt
+    getRandomInt,
+    switchPlayer
 }

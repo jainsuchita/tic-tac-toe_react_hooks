@@ -18,7 +18,7 @@ const Square = props => {
     const { value, ...rest } = props;
 
     return (
-        <Button className="square"
+        <Button
             onClick={() => rest.onClick()}>
             {rest.isActive && value}
         </Button>
