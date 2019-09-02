@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-// import { DIMS, PLAYER_X, PLAYER_O, SQUARE_DIMS } from "./constants";
+import { SQUARE_DIMS, DIMS, PLAYER_O, PLAYER_X, getRandomInt } from "utils";
 
-const DIMS = 3;
-// const DRAW = 0;
-const PLAYER_X = 1;
-const PLAYER_O = 2;
-const SQUARE_DIMS = 100;
+import { Square } from "components";
 
 const arr = new Array(DIMS ** 2).fill(null);
 
-const TicTacToe = () => {
+const Board = () => {
     const [grid, setGrid] = useState(arr);
     const [players, setPlayers] = useState({
         human: PLAYER_X,
@@ -29,7 +25,16 @@ const TicTacToe = () => {
     const humanMove = index => {
         if (!grid[index]) {
             move(index, players.human);
+            computerMove();
         }
+    };
+
+    const computerMove = () => {
+        let index = getRandomInt(0, 8);
+        while (grid[index]) {
+            index = getRandomInt(0, 8);
+        }
+        move(index, players.computer);
     };
 
     return (
@@ -39,22 +44,18 @@ const TicTacToe = () => {
                     const isActive = value !== null;
 
                     return (
-                        <Box
+                        <Square
+                            isActive={isActive}
+                            value={value === PLAYER_X ? "X" : "O"}
                             key={index}
                             onClick={() => humanMove(index)}
-                        >
-                            {
-                                isActive &&
-                                <Marker>{value === PLAYER_X ? "X" : "O"}</Marker>
-                            }
-                        </Box>
+                        />
                     );
                 })
             }
         </Container>
-
     );
-};
+}
 
 const Container = styled.div`
   display: flex;
@@ -64,21 +65,4 @@ const Container = styled.div`
   position: relative;
 `;
 
-const Box = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: ${SQUARE_DIMS}px;
-  height: ${SQUARE_DIMS}px;
-  border: 1px solid black;
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const Marker = styled.p`
-  font-size: 68px;
-`;
-
-export default TicTacToe;
+export default Board;
