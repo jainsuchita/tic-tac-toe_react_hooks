@@ -1,3 +1,7 @@
-# tic-tac-toe_react_hooks
+## TIC TAC TOE game built using Reactjs hooks
 
-# TIC TAC TOE game built in ReactJS
+>Lets you choose player [x] or [0]
+
+>Lets you play tic-tac-toe against computer
+
+>Declares Winner 
