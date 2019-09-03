@@ -5,7 +5,7 @@ import {
     SQUARE_DIMS, DIMS, DRAW,
     getRandomInt,
 } from "utils";
-import { Square, Board } from "components";
+import { Square, Board, CustomModal } from "components";
 
 const arr = new Array(DIMS ** 2).fill(null);
 const board = new Board();
@@ -23,6 +23,46 @@ const Tictactoe = () => {
     const [nextMove, setNextMove] = useState(null);
 
     const [winner, setWinner] = useState(null);
+
+    const [modalOpen, setModalOpen] = useState(false);
+
+    /**
+   * On every move, check if there is a winner. If yes, set game state to over and open result modal
+   */
+    useEffect(() => {
+        const winner = board.getWinner(grid);
+
+        const declareWinner = winner => {
+            let winnerStr;
+            switch (winner) {
+                case PLAYER_X:
+                    winnerStr = "Player X wins!";
+                    break;
+                case PLAYER_O:
+                    winnerStr = "Player O wins!";
+                    break;
+                case DRAW:
+                default:
+                    winnerStr = "It's a draw";
+            }
+            setGameState(GAME_STATES.over);
+            setWinner(winnerStr);
+            // Slight delay for the modal so there is some time to see the last move
+            setTimeout(() => setModalOpen(true), 300);
+        };
+
+        if (winner !== null && gameState !== GAME_STATES.over) {
+            declareWinner(winner);
+        }
+    }, [gameState, grid, nextMove]);
+
+
+    /**
+    * Set the grid square with respective player that made the move. Only make a move when the game is in progress.
+    * useCallback is necessary to prevent unnecessary recreation of the function, unless gameState changes, since it is
+    * being tracked in useEffect
+    * @type {Function}
+    */
 
     const move = useCallback(
         (index, player) => {
@@ -64,8 +104,12 @@ const Tictactoe = () => {
     const startNewGame = () => {
         setGameState(GAME_STATES.notStarted);
         setGrid(arr);
+        setModalOpen(false); // Close the modal when new game starts
     };
 
+    /**
+    * Make computer move when it's computer's turn
+    */
     useEffect(() => {
         let timeout;
         if (
@@ -84,73 +128,45 @@ const Tictactoe = () => {
 
     }, [nextMove, computerMove, players.computer, gameState]);
 
-    //It makes sense to check if the game has reached the end after each move is made, so we'll introduce another useEffect hook to track these changes.
-    useEffect(() => {
-        const winner = board.getWinner(grid);
-
-        const declareWinner = winner => {
-            let winnerStr;
-            switch (winner) {
-                case PLAYER_X:
-                    winnerStr = "Player X wins!";
-                    break;
-                case PLAYER_O:
-                    winnerStr = "Player O wins!";
-                    break;
-                case DRAW:
-                default:
-                    winnerStr = "It's a draw";
-            }
-            setGameState(GAME_STATES.over);
-            setWinner(winnerStr);
-        };
-
-        if (winner !== null && gameState !== GAME_STATES.over) {
-            declareWinner(winner);
-        }
-    }, [gameState, grid, nextMove]);
-
-    switch (gameState) {
-        case GAME_STATES.notStarted:
-        default:
-            return (
-                <Screen>
-                    <Inner>
-                        <ChooseText>Choose your player</ChooseText>
-                        <ButtonRow>
-                            <button onClick={() => choosePlayer(PLAYER_X)}>X</button>
-                            <p>or</p>
-                            <button onClick={() => choosePlayer(PLAYER_O)}>O</button>
-                        </ButtonRow>
-                    </Inner>
-                </Screen>
-            );
-        case GAME_STATES.inProgress:
-            return (
-                <Container dims={DIMS}>
-                    {
-                        grid.map((value, index) => {
-                            const isActive = value !== null;
-                            return (
-                                <Square
-                                    isActive={isActive}
-                                    value={value === PLAYER_X ? "X" : "O"}
-                                    key={index}
-                                    onClick={() => humanMove(index)}
-                                />
-                            );
-                        })
+    return gameState === GAME_STATES.notStarted ? (
+        <Screen>
+            <Inner>
+                <ChooseText>Choose your player</ChooseText>
+                <ButtonRow>
+                    <button onClick={() => choosePlayer(PLAYER_X)}>X</button>
+                    <p>or</p>
+                    <button onClick={() => choosePlayer(PLAYER_O)}>O</button>
+                </ButtonRow>
+            </Inner>
+        </Screen>
+    ) : (
+            <Container dims={DIMS}>
+                {
+                    grid.map((value, index) => {
+                        const isActive = value !== null;
+                        return (
+                            <Square
+                                isActive={isActive}
+                                value={value === PLAYER_X ? "X" : "O"}
+                                key={index}
+                                onClick={() => humanMove(index)}
+                            />
+                        );
+                    })
+                }
+                <Strikethrough
+                    styles={
+                        gameState === GAME_STATES.over && board.getStrikethroughStyles()
                     }
-                </Container>
-            );
-        case GAME_STATES.over:
-            return (
-                <div>
-                    <p>{winner}</p>
-                    <button onClick={startNewGame}>Start over</button>
-                </div>
-            );
-    }
+                />
+                <CustomModal
+                    isOpen={modalOpen}
+                    winner={winner}
+                    close={() => setModalOpen(false)}
+                    startNewGame={startNewGame}
+                />
+            </Container>
+        );
 }
 
 const ButtonRow = styled.div`
@@ -176,6 +192,14 @@ const Container = styled.div`
   width: ${({ dims }) => `${dims * (SQUARE_DIMS + 5)}px`};
   flex-flow: wrap;
   position: relative;
+`;
+
+const Strikethrough = styled.div`
+  position: absolute;
+  ${({ styles }) => styles}
+  background-color: indianred;
+  height: 5px;
+  width: ${({ styles }) => !styles && "0px"};
 `;
 
 export default Tictactoe;
