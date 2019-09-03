@@ -2,12 +2,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import {
     GAME_STATES, PLAYER_X, PLAYER_O, switchPlayer,
-    SQUARE_DIMS, DIMS,
+    SQUARE_DIMS, DIMS, DRAW,
     getRandomInt,
 } from "utils";
-import { Square } from "components";
+import { Square, Board } from "components";
 
 const arr = new Array(DIMS ** 2).fill(null);
+const board = new Board();
 
 const Tictactoe = () => {
     const [grid, setGrid] = useState(arr);
@@ -20,6 +21,8 @@ const Tictactoe = () => {
     });
 
     const [nextMove, setNextMove] = useState(null);
+
+    const [winner, setWinner] = useState(null);
 
     const move = useCallback(
         (index, player) => {
@@ -58,6 +61,11 @@ const Tictactoe = () => {
         setNextMove(PLAYER_X); // Set the Player X to make the first move
     };
 
+    const startNewGame = () => {
+        setGameState(GAME_STATES.notStarted);
+        setGrid(arr);
+    };
+
     useEffect(() => {
         let timeout;
         if (
@@ -76,40 +84,72 @@ const Tictactoe = () => {
 
     }, [nextMove, computerMove, players.computer, gameState]);
 
-    if (gameState === GAME_STATES.notStarted) {
-        return (
-            <Screen>
-                <Inner>
-                    <ChooseText>Choose your player</ChooseText>
-                    <ButtonRow>
-                        <button onClick={() => choosePlayer(PLAYER_X)}>X</button>
-                        <p>or</p>
-                        <button onClick={() => choosePlayer(PLAYER_O)}>O</button>
-                    </ButtonRow>
-                </Inner>
-            </Screen>
-        )
-    }
+    //It makes sense to check if the game has reached the end after each move is made, so we'll introduce another useEffect hook to track these changes.
+    useEffect(() => {
+        const winner = board.getWinner(grid);
 
-    else {
-        return (
-            <Container dims={DIMS}>
-                {
-                    grid.map((value, index) => {
-                        const isActive = value !== null;
-                        return (
-                            <Square
-                                isActive={isActive}
-                                value={value === PLAYER_X ? "X" : "O"}
-                                key={index}
-                                onClick={() => humanMove(index)}
-                            />
-                        );
-                    })
-                }
-            </Container>
-        );
+        const declareWinner = winner => {
+            let winnerStr;
+            switch (winner) {
+                case PLAYER_X:
+                    winnerStr = "Player X wins!";
+                    break;
+                case PLAYER_O:
+                    winnerStr = "Player O wins!";
+                    break;
+                case DRAW:
+                default:
+                    winnerStr = "It's a draw";
+            }
+            setGameState(GAME_STATES.over);
+            setWinner(winnerStr);
+        };
 
+        if (winner !== null && gameState !== GAME_STATES.over) {
+            declareWinner(winner);
+        }
+    }, [gameState, grid, nextMove]);
+
+    switch (gameState) {
+        case GAME_STATES.notStarted:
+        default:
+            return (
+                <Screen>
+                    <Inner>
+                        <ChooseText>Choose your player</ChooseText>
+                        <ButtonRow>
+                            <button onClick={() => choosePlayer(PLAYER_X)}>X</button>
+                            <p>or</p>
+                            <button onClick={() => choosePlayer(PLAYER_O)}>O</button>
+                        </ButtonRow>
+                    </Inner>
+                </Screen>
+            );
+        case GAME_STATES.inProgress:
+            return (
+                <Container dims={DIMS}>
+                    {
+                        grid.map((value, index) => {
+                            const isActive = value !== null;
+                            return (
+                                <Square
+                                    isActive={isActive}
+                                    value={value === PLAYER_X ? "X" : "O"}
+                                    key={index}
+                                    onClick={() => humanMove(index)}
+                                />
+                            );
+                        })
+                    }
+                </Container>
+            );
+        case GAME_STATES.over:
+            return (
+                <div>
+                    <p>{winner}</p>
+                    <button onClick={startNewGame}>Start over</button>
+                </div>
+            );
     }
 }
 

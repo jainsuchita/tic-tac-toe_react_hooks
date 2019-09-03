@@ -1,71 +1,50 @@
-// import React, { useState } from "react";
-// import styled from "styled-components";
-// import {
-//     SQUARE_DIMS, DIMS, PLAYER_O, PLAYER_X,
-//     getRandomInt,
-// } from "utils";
+import { DIMS, DRAW } from "utils";
 
-// import Square from "./Square";
+export default class Board {
+    constructor(grid) {
+        this.grid = grid || new Array(DIMS ** 2).fill(null);
+    }
 
-// const arr = new Array(DIMS ** 2).fill(null);
+    // Collect indices of empty squares and return them
+    getEmptySquares = (grid = this.grid) => {
+        let squares = [];
+        grid.forEach((square, i) => {
+            if (square === null) squares.push(i);
+        });
+        return squares;
+    };
 
-// const Board = ({ players }) => {
-//     const [grid, setGrid] = useState(arr);
-//     // const [players, setPlayers] = useState({
-//     //     human: PLAYER_X,
-//     //     computer: PLAYER_O
-//     // });
+    isEmpty = (grid = this.grid) => {
+        return this.getEmptySquares(grid).length === DIMS ** 2;
+    };
 
-//     const move = (index, player) => {
-//         setGrid(grid => {
-//             const gridCopy = grid.concat();
-//             gridCopy[index] = player;
+    getWinner = (grid = this.grid) => {
+        const winningCombos = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+        let res = null;
+        winningCombos.forEach((el, i) => {
+            if (
+                grid[el[0]] !== null &&
+                grid[el[0]] === grid[el[1]] &&
+                grid[el[0]] === grid[el[2]]
+            ) {
+                res = grid[el[0]];
+            } else if (res === null && this.getEmptySquares(grid).length === 0) {
+                res = DRAW;
+            }
+        });
+        return res;
+    };
 
-//             console.log(gridCopy)
-//             return gridCopy;
-//         });
-//     };
-
-//     const computerMove = () => {
-//         let index = getRandomInt(0, 8);
-//         while (grid[index]) {
-//             index = getRandomInt(0, 8);
-//         }
-//         move(index, players.computer);
-//     };
-
-//     const humanMove = index => {
-//         if (!grid[index]) {
-//             move(index, players.human);
-//             setNextMove(players.computer);
-//         }
-//     };
-
-//     return (
-//         <Container dims={DIMS}>
-//             {
-//                 grid.map((value, index) => {
-//                     const isActive = value !== null;
-//                     return (
-//                         <Square
-//                             isActive={isActive}
-//                             value={value === PLAYER_X ? "X" : "O"}
-//                             key={index}
-//                             onClick={() => humanMove(index)}
-//                         />
-//                     );
-//                 })
-//             }
-//         </Container>
-//     );
-// }
-
-// const Container = styled.div`
-//   display: flex;
-//   justify-content: center;
-//   width: ${({ dims }) => `${dims * (SQUARE_DIMS + 5)}px`};
-//   flex-flow: wrap;
-//   position: relative;
-// `;
-
-// export default Board;
+    clone = () => {
+        return new Board(this.grid.concat());
+    };
+}
