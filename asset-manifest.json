@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/jainsuchita/tic-tac-toe_react_hooks/static/js/main.c3b1a84c.chunk.js",
-    "main.js.map": "/jainsuchita/tic-tac-toe_react_hooks/static/js/main.c3b1a84c.chunk.js.map",
-    "runtime~main.js": "/jainsuchita/tic-tac-toe_react_hooks/static/js/runtime~main.193f9a9e.js",
-    "runtime~main.js.map": "/jainsuchita/tic-tac-toe_react_hooks/static/js/runtime~main.193f9a9e.js.map",
-    "static/js/2.1bf41a1f.chunk.js": "/jainsuchita/tic-tac-toe_react_hooks/static/js/2.1bf41a1f.chunk.js",
-    "static/js/2.1bf41a1f.chunk.js.map": "/jainsuchita/tic-tac-toe_react_hooks/static/js/2.1bf41a1f.chunk.js.map",
-    "index.html": "/jainsuchita/tic-tac-toe_react_hooks/index.html",
-    "precache-manifest.7057d8bbc67aede0e16421f2d40c4888.js": "/jainsuchita/tic-tac-toe_react_hooks/precache-manifest.7057d8bbc67aede0e16421f2d40c4888.js",
-    "service-worker.js": "/jainsuchita/tic-tac-toe_react_hooks/service-worker.js"
+    "main.js": "/tic-tac-toe_react_hooks/static/js/main.c3b1a84c.chunk.js",
+    "main.js.map": "/tic-tac-toe_react_hooks/static/js/main.c3b1a84c.chunk.js.map",
+    "runtime~main.js": "/tic-tac-toe_react_hooks/static/js/runtime~main.61ba965f.js",
+    "runtime~main.js.map": "/tic-tac-toe_react_hooks/static/js/runtime~main.61ba965f.js.map",
+    "static/js/2.01eecfbb.chunk.js": "/tic-tac-toe_react_hooks/static/js/2.01eecfbb.chunk.js",
+    "static/js/2.01eecfbb.chunk.js.map": "/tic-tac-toe_react_hooks/static/js/2.01eecfbb.chunk.js.map",
+    "index.html": "/tic-tac-toe_react_hooks/index.html",
+    "precache-manifest.d60417a239b6db6d404622b4bd42ec42.js": "/tic-tac-toe_react_hooks/precache-manifest.d60417a239b6db6d404622b4bd42ec42.js",
+    "service-worker.js": "/tic-tac-toe_react_hooks/service-worker.js"
   }
 }
